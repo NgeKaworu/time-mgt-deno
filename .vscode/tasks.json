@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "type": "shell",
+  "echoCommand": true,
+  "cwd": "${workspaceFolder}",
+  "tasks": [
+    {
+      "label": "run deno",
+      "command": "deno run -A --unstable ./main.ts -m=mongodb://localhost:27017 -i=true --db='time-mgt' -k=f3fa39nui89Wi707"
+    }
+  ]
+}
