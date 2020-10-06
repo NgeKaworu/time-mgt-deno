@@ -3,9 +3,9 @@ import {
   MongoClient,
 } from "https://deno.land/x/mongo/mod.ts";
 
-import { UserSchema, T_User } from "../models/user.ts";
-import { TagSchema, T_Tag } from "../models/tag.ts";
-import { RecordSchema, T_Record } from "../models/record.ts";
+// import { UserSchema, T_User } from "../models/user.ts";
+// import { TagSchema, T_Tag } from "../models/tag.ts";
+// import { RecordSchema, T_Record } from "../models/record.ts";
 
 class DbEngine {
   url!: string;
@@ -19,31 +19,46 @@ class DbEngine {
 
     this.client = new MongoClient();
     this.client.connectWithUri(url);
-    this.db = this.client.database("time-mgt");
+    this.db = this.client.database(dbName);
 
-    // deno 驱动无法创建索引
-    init = false;
     if (init) {
-      // 初始化user表
-      const user = this.db.collection<UserSchema>(T_User);
-      await user.createIndexes(
-        [
-          { keys: { email: 1 }, options: { unique: true } },
-          { keys: { name: 1 } },
-        ],
-      );
+      const cmd = Deno.run({
+        cmd: ["mongo", `${url}/${dbName}`, "./createIndexes.js"],
+        stdout: "piped",
+        stderr: "piped",
+      });
 
-      // 初始化tag表
-      const tag = this.db.collection<TagSchema>(T_Tag);
-      await tag.createIndexes(
-        [{ keys: { name: 1 } }],
-      );
+      const output = await cmd.output(); // "piped" must be set
+      const outStr = new TextDecoder().decode(output);
 
-      // 初始化record表
-      const record = this.db.collection<RecordSchema>(T_Record);
-      await record.createIndexes(
-        [{ keys: { uid: 1 } }, { keys: { tid: 1 } }],
-      );
+      const error = await cmd.stderrOutput();
+      const errorStr = new TextDecoder().decode(error);
+
+      cmd.close();
+
+      if (outStr) console.log("init db success, info: \n", outStr);
+      if (errorStr) console.log("init db fail, info: \n", errorStr);
+      // deno 驱动无法创建索引
+      //   // 初始化user表
+      //   const user = this.db.collection<UserSchema>(T_User);
+      //   await user.createIndexes(
+      //     [
+      //       { keys: { email: 1 }, options: { unique: true } },
+      //       { keys: { name: 1 } },
+      //     ],
+      //   );
+
+      //   // 初始化tag表
+      //   const tag = this.db.collection<TagSchema>(T_Tag);
+      //   await tag.createIndexes(
+      //     [{ keys: { name: 1 } }],
+      //   );
+
+      //   // 初始化record表
+      //   const record = this.db.collection<RecordSchema>(T_Record);
+      //   await record.createIndexes(
+      //     [{ keys: { uid: 1 } }, { keys: { tid: 1 } }],
+      //   );
     }
   }
 
