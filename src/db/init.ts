@@ -3,6 +3,8 @@ import {
   MongoClient,
 } from "https://deno.land/x/mongo/mod.ts";
 
+import * as path from "https://deno.land/std/path/mod.ts";
+
 // import { UserSchema, T_User } from "../models/user.ts";
 // import { TagSchema, T_Tag } from "../models/tag.ts";
 // import { RecordSchema, T_Record } from "../models/record.ts";
@@ -21,9 +23,18 @@ class DbEngine {
     this.client.connectWithUri(url);
     this.db = this.client.database(dbName);
 
+    // equal node __dirname
+    const __dirname = path.dirname(path.fromFileUrl(import.meta.url));
+
+    // const __filename = path.fromFileUrl(import.meta.url);
+
     if (init) {
       const cmd = Deno.run({
-        cmd: ["mongo", `${url}/${dbName}`, "./createIndexes.js"],
+        cmd: [
+          "mongo",
+          `${url}/${dbName}`,
+          path.resolve(__dirname, "createIndexes.js"),
+        ],
         stdout: "piped",
         stderr: "piped",
       });
