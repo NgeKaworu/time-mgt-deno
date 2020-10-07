@@ -65,4 +65,6 @@ app.use(router.allowedMethods());
 
 await app.listen({ port: 8000, signal });
 
+db.Close()
+
 console.log("http close");

@@ -76,6 +76,10 @@ class DbEngine {
   GetColl<T>(table: string) {
     return this.db.collection<T>(table);
   }
+
+  Close() {
+    return this.client.close();
+  }
 }
 
 export const db = new DbEngine();
