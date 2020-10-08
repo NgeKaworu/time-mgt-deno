@@ -8,11 +8,8 @@ import { RetFail, RetMissing, RetOK } from "../tools/resultor.ts";
 import { CheckRequired } from "../tools/checks.ts";
 import { Encrypt } from "../tools/crypto.ts";
 
-import { parse } from "https://deno.land/std/flags/mod.ts";
 import { ObjectId } from "https://deno.land/x/mongo/mod.ts";
 import { GenJwt } from "../tools/jwt.ts";
-
-const { k: key } = parse(Deno.args);
 
 export async function Login(ctx: Context) {
   if (!ctx.request.hasBody) {
