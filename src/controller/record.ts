@@ -150,8 +150,8 @@ export async function StatisticRecord(ctx: Context) {
 
     if (start && end) {
       match["createAt"] = {
-        $gte: start,
-        $lte: end,
+        $gte: new Date(start),
+        $lte: new Date(end),
       };
     }
 
